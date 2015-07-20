@@ -48,6 +48,8 @@ function CubeCell() {
   API.r_acc = 0.0;
   API.g_acc = 0.0;
   API.b_acc = 0.0;
+
+  return API;
 }
 
 // Uses a 3d RGB histogram to find local maximas in the density distribution
@@ -254,4 +256,6 @@ function ColorCube(resolution, avoid_color) {
     // TODO
     return maxima;
   };
+
+  return API;
 }
