@@ -1,8 +1,15 @@
 # colorcube.js
 
-this is an in-progress javascript port of [ColorCube](https://github.com/pixelogik/ColorCube), by Ole Krause-Sparmann.
+this is ajavascript port of [ColorCube](https://github.com/pixelogik/ColorCube), by Ole Krause-Sparmann.
 
 ColorCube is for dominant color extraction from RGB images
+
+<div style="color: red">
+colorcube-js uses ES6 features
+
+this will probably only work in Chrome Canary until v45 goes stable in September, '15.
+</div>
+
 
 ## usage
 
