@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2015, Ole Krause-Sparmann
+Copyright (c) 2015, Ole Krause-Sparmann,
                     Andrew Monks <a@monks.co>
 
 Permission to use, copy, modify, and/or distribute this software for
@@ -16,11 +16,65 @@ PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
 TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE. */
 
+/* jshint esnext: true */
+
+/*
+  CanvasImage Class
+  Class that wraps the html image element and canvas.
+  It also simplifies some of the canvas context manipulation
+  with a set of helper functions.
+
+  modified from Color Thief v2.0
+  by Lokesh Dhakar - http://www.lokeshdhakar.com
+*/
+var CanvasImage = function (image) {
+  "use strict";
+
+  if (typeof image === "undefined") {
+    throw "no image!!";
+  }
+
+  let API = {};
+
+  let canvas  = document.createElement('canvas');
+  let context = canvas.getContext('2d');
+
+  document.body.appendChild(canvas);
+
+  let width  = canvas.width  = image.width;
+  let height = canvas.height = image.height;
+
+  context.drawImage(image, 0, 0, width, height);
+
+  API.clear = () => {
+    context.clearRect(0, 0, width, height);
+  };
+
+  API.update = (imageData) => {
+    context.putImageData(imageData, 0, 0);
+  };
+
+  API.getPixelCount = () => {
+    return width * height;
+  };
+
+  API.getImageData = () => {
+    return context.getImageData(0, 0, width, height);
+  };
+
+  API.removeCanvas = () => {
+    canvas.parentNode.removeChild(canvas);
+  };
+
+  return API;
+};
 
 // Local maxima as found during the image analysis.
 // We need this class for ordering by cell hit count.
 function LocalMaximum(hit_count, cell_index, r, g, b) {
-  var API = {};
+  "use strict";
+
+  let API = {};
 
   // hit count of the cell
   API.hit_count = hit_count;
@@ -38,7 +92,9 @@ function LocalMaximum(hit_count, cell_index, r, g, b) {
 
 // The color cube is made out of these cells
 function CubeCell() {
-  var API = {};
+  "use strict";
+
+  let API = {};
 
   // Count of hits
   // (dividing the accumulators by this value gives the average color)
@@ -54,85 +110,78 @@ function CubeCell() {
 
 // Uses a 3d RGB histogram to find local maximas in the density distribution
 // in order to retrieve dominant colors of pixel images
-function ColorCube(resolution, avoid_color) {
-  var API = {};
+function ColorCube(resolution_in, avoid_color_in) {
+  "use strict";
 
-  // __init__ block
-  // (constructor)
+  let API = {};
 
-    // keep resolution
-    API.resolution = resolution;
+  // keep resolution
+  let resolution = resolution_in || 30;
 
-    // threshold for distinct local maxima
-    API.distinct_threshold = 0.2;
+  // threshold for distinct local maxima
+  let distinct_threshold = 0.2;
 
-    // color to avoid
-    API.avoid_color = avoid_color;
+  // color to avoid
+  let avoid_color = avoid_color_in || [255, 255, 255];
 
-    // colors that are darker than this go away
-    API.bright_threshold = 0.6;
+  // colors that are darker than this go away
+  let bright_threshold = 0.6;
 
-    // helper variable to have cell count handy
-    API.cell_count = resolution * resolution * resolution;
+  // helper variable to have cell count handy
+  let cell_count = resolution * resolution * resolution;
 
-    // create cells
-    API.cells = [];
-    times(cell_count, function() {
-      API.cells.push( CubeCell() );
-    });
-    // from underscore
-    function times(n, iterator) {
-      var accum = Array(Math.max(0, n));
-      for (var i = 0; i < n; i++) accum[i] = iterator.call();
-      return accum;
-    }
+  // create cells
+  let cells = [];
+  for (let i = 0; i <=  cell_count; i++) {
+    cells.push( CubeCell() );
+  }
 
-    // indices for neighbor cells in three dimensional grid
-    API.neighbour_indices = [
-      [ 0, 0, 0],
-      [ 0, 0, 1],
-      [ 0, 0,-1],
+  // indices for neighbor cells in three dimensional grid
+  let neighbour_indices = [
+    [ 0, 0, 0],
+    [ 0, 0, 1],
+    [ 0, 0,-1],
 
-      [ 0, 1, 0],
-      [ 0, 1, 1],
-      [ 0, 1,-1],
+    [ 0, 1, 0],
+    [ 0, 1, 1],
+    [ 0, 1,-1],
 
-      [ 0,-1, 0],
-      [ 0,-1, 1],
-      [ 0,-1,-1],
+    [ 0,-1, 0],
+    [ 0,-1, 1],
+    [ 0,-1,-1],
 
-      [ 1, 0, 0],
-      [ 1, 0, 1],
-      [ 1, 0,-1],
+    [ 1, 0, 0],
+    [ 1, 0, 1],
+    [ 1, 0,-1],
 
-      [ 1, 1, 0],
-      [ 1, 1, 1],
-      [ 1, 1,-1],
+    [ 1, 1, 0],
+    [ 1, 1, 1],
+    [ 1, 1,-1],
 
-      [ 1,-1, 0],
-      [ 1,-1, 1],
-      [ 1,-1,-1],
+    [ 1,-1, 0],
+    [ 1,-1, 1],
+    [ 1,-1,-1],
 
-      [-1, 0, 0],
-      [-1, 0, 1],
-      [-1, 0,-1],
+    [-1, 0, 0],
+    [-1, 0, 1],
+    [-1, 0,-1],
 
-      [-1, 1, 0],
-      [-1, 1, 1],
-      [-1, 1,-1],
+    [-1, 1, 0],
+    [-1, 1, 1],
+    [-1, 1,-1],
 
-      [-1,-1, 0],
-      [-1,-1, 1],
-      [-1,-1,-1]
-    ];
+    [-1,-1, 0],
+    [-1,-1, 1],
+    [-1,-1,-1]
+  ];
 
   // returns linear index for cell with given 3d index
-  API.cell_index = function(r, g, b) {
-    return (r + g*API.resolution + b*API.resolution*API.resolution);
+  let cell_index = (r, g, b) => {
+    return (r + g * resolution + b * resolution * resolution);
   };
 
-  API.clear_cells = function() {
-    for (var cell in API.cells) {
+  let clear_cells = () => {
+    for (let cell in API.cells) {
       cell.hit_count = 0;
       cell.r_acc = 0;
       cell.g_acc = 0;
@@ -140,8 +189,8 @@ function ColorCube(resolution, avoid_color) {
     }
   };
 
-  API.get_colors = function(image) {
-    m = API.find_local_maxima(image);
+  API.get_colors = (image) => {
+    let m = find_local_maxima(image);
 
     if (typeof API.avoid_color !== 'undefined') {
       m = API.filter_too_similar(m);
@@ -149,51 +198,86 @@ function ColorCube(resolution, avoid_color) {
 
     m = API.filter_distinct_maxima(m);
 
-    var colors = [];
-    for (var n in m) {
-      var r = int(n.r * 255.0);
-      var g = int(n.g * 255.0);
-      var b = int(n.b * 255.0);
-      colors.append([r, g, b]);
+    let colors = [];
+    for (let n in m) {
+      let r = Math.round(m[n].r * 255.0);
+      let g = Math.round(m[n].g * 255.0);
+      let b = Math.round(m[n].b * 255.0);
+      let color = rgbToHex(r, g, b);
+      if (color === "#NaNNaNNaN") {continue;}
+      colors.push(color);
     }
 
     return colors;
   };
 
+  let componentToHex = (c) => {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+  };
+
+  let rgbToHex = (r, g, b) => {
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+  };
+
   // finds and returns local maxima in 3d histogram, sorted by hit count
-  API.find_local_maxima = function(self, image) {
+  let find_local_maxima = (image) => {
     // reset all cells
-    self.clear_cells();
+    clear_cells();
+
+    // get the image pixels
+    let data = image.getImageData().data;
 
     // iterate over all pixels of the image
-    // TODO
-    for (var pixels in image) {
+    for(let i = 0; i < data.length; i += 4) {
       // get color components
+      let red = data[i] / 255.0;
+      let green = data[i+1] / 255.0;
+      let blue = data[i+2] / 255.0;
+      let alpha = data[i+3] / 255.0;
 
       // stop if brightnesses are all below threshold
+      if (red < bright_threshold &&
+          green < bright_threshold &&
+          blue < bright_threshold) {
+        continue;
+      }
 
-      // if image has alpha channel, weigh colors by it
+      // weigh colors by alpha channel
+      red *= alpha;
+      green *= alpha;
+      blue *= alpha;
 
       // map color components to cell indicies in each color dimension
+      // TODO maybe this should round down? OG colorcube uses python's int()
+      let r_index = Math.round( red * ( resolution - 1.0 ) );
+      let g_index = Math.round( green * ( resolution - 1.0 ) );
+      let b_index = Math.round( blue * ( resolution - 1.0 ) );
 
       // compute linear cell index
+      let index = cell_index(r_index, g_index, b_index);
 
       // increase hit count of cell
+      cells[index].hit_count += 1;
 
       // add pixel colors to cell color accumulators
+      cells[index].r_acc += red;
+      cells[index].g_acc += green;
+      cells[index].b_acc += blue;
     }
 
     // we collect local maxima in here
     var local_maxima = [];
 
     // find local maxima in the grid
-    for (var r in API.resolution) {
-      for (var g in API.resolution) {
-        for (var b in API.resolution) {
-          local_index = self.cell_index(r, g, b);
+    for (let r = 0; r < resolution; r++) {
+      for (let g = 0; g < resolution; g++) {
+        for (let b = 0; b < resolution; b++) {
+          // console.log("pixel!!");
+          let local_index = cell_index(r, g, b);
 
           // get hit count of this cell
-          local_hit_count = self.cells[local_index].hit_count;
+          let local_hit_count = cells[local_index].hit_count;
 
           // if this cell has no hits, ignore it
           if (local_hit_count === 0) {
@@ -201,18 +285,18 @@ function ColorCube(resolution, avoid_color) {
           }
 
           // it's a local maxima until we find a neighbor with a higher hit count
-          var is_local_maximum = true;
+          let is_local_maximum = true;
 
           // check if any neighbor has a higher hit count, if so, no local maxima
-          for (var n in Array(27)) {
-            r_index = r + self.neighbor_indices[n][0];
-            g_index = g + self.neighbor_indices[n][1];
-            b_index = b + self.neighbor_indices[n][2];
+          for (let n in Array(27)) {
+            r_index = r + this.neighbor_indices[n][0];
+            g_index = g + this.neighbor_indices[n][1];
+            b_index = b + this.neighbor_indices[n][2];
 
             // only check valid cell indices
             if (r_index >= 0 && g_index >= 0 && b_index >= 0) {
-              if (r_index < self.resolution && g_index < self.resolution && b_index < self.resolution) {
-                if (self.cells[self.cell_index(r_index, g_index, b_index)].hit_count > local_hit_count) {
+              if (r_index < this.resolution && g_index < this.resolution && b_index < this.resolution) {
+                if (this.cells[this.cell_index(r_index, g_index, b_index)].hit_count > local_hit_count) {
                   // this is not a local maximum
                   is_local_maximum = false;
                   // TODO
@@ -229,22 +313,31 @@ function ColorCube(resolution, avoid_color) {
           }
 
           // otherwise add this cell as a local maximum
-          var avg_r = self.cells[local_index].r_acc / float(self.cells[local_index].hit_count);
-          var avg_g = self.cells[local_index].g_acc / float(self.cells[local_index].hit_count);
-          var avg_b = self.cells[local_index].b_acc / float(self.cells[local_index].hit_count);
-          local_maxima.append( LocalMaximum(local_hit_count, local_index, avg_r, avg_g, avg_b) );
+          var avg_r = cells[local_index].r_acc / cells[local_index].hit_count;
+          var avg_g = cells[local_index].g_acc / cells[local_index].hit_count;
+          var avg_b = cells[local_index].b_acc / cells[local_index].hit_count;
+          local_maxima.push( new LocalMaximum(local_hit_count, local_index, avg_r, avg_g, avg_b) );
         }
       }
     }
 
     // return local maxima sorted with respect to hit count
     // TODO
+    function compare(a,b) {
+      if (a.hit_count > b.hit_count)
+        return -1;
+      if (a.hit_count < b.hit_count)
+        return 1;
+      return 0;
+    }
+    local_maxima = local_maxima.sort(compare);
+
     return local_maxima;
   };
 
   // Returns a filtered version of the specified array of maxima,
-  // in which all entries have a minimum distance of self.distinct_threshold
-  API.filter_distinct_maxima = function(self, maxima) {
+  // in which all entries have a minimum distance of this.distinct_threshold
+  API.filter_distinct_maxima = (maxima) => {
     // TODO
     return maxima;
   };
@@ -252,7 +345,7 @@ function ColorCube(resolution, avoid_color) {
 
   // Returns a filtered version of the specified array of maxima,
   // in which all entries are far enough away from the specified avoid_color
-  API.filter_too_similar = function(self, maxima) {
+  API.filter_too_similar = (maxima) => {
     // TODO
     return maxima;
   };
