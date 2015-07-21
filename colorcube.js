@@ -30,8 +30,8 @@ PERFORMANCE OF THIS SOFTWARE. */
 var CanvasImage = function (image) {
   "use strict";
 
-  if (typeof image === "undefined") {
-    throw "no image!!";
+  if (! image instanceof HTMLElement) {
+    throw "You've gotta use an html image element as ur input!!";
   }
 
   let API = {};
@@ -39,31 +39,15 @@ var CanvasImage = function (image) {
   let canvas  = document.createElement('canvas');
   let context = canvas.getContext('2d');
 
-  document.body.appendChild(canvas);
+  // document.body.appendChild(canvas);
 
-  let width  = canvas.width  = image.width;
-  let height = canvas.height = image.height;
+  canvas.width  = image.width;
+  canvas.height = image.height;
 
-  context.drawImage(image, 0, 0, width, height);
-
-  API.clear = () => {
-    context.clearRect(0, 0, width, height);
-  };
-
-  API.update = (imageData) => {
-    context.putImageData(imageData, 0, 0);
-  };
-
-  API.getPixelCount = () => {
-    return width * height;
-  };
+  context.drawImage(image, 0, 0, image.width, image.height);
 
   API.getImageData = () => {
-    return context.getImageData(0, 0, width, height);
-  };
-
-  API.removeCanvas = () => {
-    canvas.parentNode.removeChild(canvas);
+    return context.getImageData(0, 0, image.width, image.height);
   };
 
   return API;
@@ -133,7 +117,7 @@ function ColorCube(resolution_in, avoid_color_in) {
   // create cells
   let cells = [];
   for (let i = 0; i <=  cell_count; i++) {
-    cells.push( CubeCell() );
+    cells.push( new CubeCell() );
   }
 
   // indices for neighbor cells in three dimensional grid
@@ -288,7 +272,7 @@ function ColorCube(resolution_in, avoid_color_in) {
           let is_local_maximum = true;
 
           // check if any neighbor has a higher hit count, if so, no local maxima
-          for (let n in Array(27)) {
+          for (let n in new Array(27)) {
             r_index = r + this.neighbor_indices[n][0];
             g_index = g + this.neighbor_indices[n][1];
             b_index = b + this.neighbor_indices[n][2];

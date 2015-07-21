@@ -7,6 +7,7 @@ ColorCube is for dominant color extraction from RGB images
 ## TODO
 
 -   [x] copy the python code over
+-   [x] deal with canvasizing images
 -   [ ] clean up API // hide more information
--   [ ] deal with canvasizing images
--   [ ] run it any times
+-   [ ] document usage
+-   [ ] transpile out all the es7 features I'm using...
