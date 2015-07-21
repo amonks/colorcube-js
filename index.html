@@ -6,5 +6,15 @@
 <body>
   <img src="blue.png" alt="me" id="image" >
   <script src="colorcube.js"></script>
+  <script>
+    /* jshint esnext: true */
+    (function () {
+     'use strict';
+      let cc = new ColorCube(30); // 30 is the resolution
+      let image = document.getElementById("image");
+      let colors = cc.get_colors(image);
+      console.log(colors);
+    }());
+  </script>
 </body>
 </html>

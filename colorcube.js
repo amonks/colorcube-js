@@ -174,7 +174,9 @@ function ColorCube(resolution_in, avoid_color_in) {
   };
 
   API.get_colors = (image) => {
-    let m = find_local_maxima(image);
+    let canvasimage = new CanvasImage(image);
+
+    let m = find_local_maxima(canvasimage);
 
     if (typeof API.avoid_color !== 'undefined') {
       m = API.filter_too_similar(m);
