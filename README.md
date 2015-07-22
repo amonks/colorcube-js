@@ -1,5 +1,7 @@
 # colorcube.js
 
+## [demo](http://amonks.github.io/colorcube-js/)
+
 This is a JavaScript port of [ColorCube](https://github.com/pixelogik/ColorCube), by Ole Krause-Sparmann. You can find an excellent description of how it works at [that repo](https://github.com/pixelogik/ColorCube)
 
 ColorCube is for dominant color extraction from RGB images. Given an image element, it returns a sorted array of hex colors.
