@@ -1,3 +1,20 @@
+/*
+Copyright (c) 2015, Ole Krause-Sparmann,
+                    Andrew Monks <a@monks.co>
+Permission to use, copy, modify, and/or distribute this software for
+any purpose with or without fee is hereby granted, provided that the
+above copyright notice and this permission notice appear in all
+copies.
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL
+WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
+AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
+DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
+PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+*/
+
 /* jshint esnext: true */
 
 /*
@@ -299,7 +316,7 @@ function ColorCube( resolution = 20,
           let avg_r = cells[local_index].r_acc / cells[local_index].hit_count;
           let avg_g = cells[local_index].g_acc / cells[local_index].hit_count;
           let avg_b = cells[local_index].b_acc / cells[local_index].hit_count;
-          let localmaximum = new LocalMaximum(local_hit_count, local_index, avg_r, avg_g, avg_b)
+          let localmaximum = new LocalMaximum(local_hit_count, local_index, avg_r, avg_g, avg_b);
 
           local_maxima.push( localmaximum );
         }
