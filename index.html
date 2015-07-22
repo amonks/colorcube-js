@@ -12,27 +12,45 @@
 
   <h1><a href="https://github.com/amonks/colorcube-js">colorcube-js</a></h1>
 
-  <img src="images/cocacola.jpg" alt="me" id="image">
-  <h2>found these colors:</h2>
-  <ul id="output"></ul>
+  <div id="output"></div>
+
+  <img src="images/cocacola.jpg" id="coke">
+  <button id="do-coke">Do It!</button>
+
+  <img src="images/andrew-monks.png" id="me">
+  <button id="do-me">Do It!</button>
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/core-js/0.9.18/core.min.js"></script>
   <script src="dist/colorcube.min.js"></script>
   <script>
-    /* jshint esnext: true */
-    (function () {
-     'use strict';
-      var cc = new ColorCube(20, 0.2, 0.4);
-      var image = document.getElementById("image");
+    var cc = new ColorCube(20, 0.2, 0.4);
+
+    function do_it(image_id) {
+      var image = document.getElementById(image_id);
       var colors = cc.get_colors(image);
-
       console.log(colors);
+      outputColors(colors);
+    }
 
+    function outputColors(colors) {
       var output = document.getElementById('output');
-      for (var color of colors) {
-        output.innerHTML += "<li style='background: " + color + "'>" + color + "</li>";
+      output.innerHTML = "<h2>Found These Colors</h2><ul id='colors'></ul>";
+      var colors_list = document.getElementById('colors');
+      for (var c in colors) {
+        var color = colors[c];
+        colors_list.innerHTML += "<li style='background: " + color + "'>" + color + "</li>";
       }
-    }());
+    }
+
+    var me_button = document.getElementById('do-me');
+    me_button.addEventListener("click", function() {
+      do_it('me');
+    });
+
+    var coke_button = document.getElementById('do-coke');
+    coke_button.addEventListener("click", function() {
+      do_it('coke');
+    });
   </script>
 </body>
 </html>
