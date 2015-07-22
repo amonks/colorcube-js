@@ -358,7 +358,6 @@ function ColorCube( resolution = 20,
 
       // add to filtered array if is distinct
       if (is_distinct === true) {
-        console.log(is_distinct, m);
         result.push(m);
       }
     }

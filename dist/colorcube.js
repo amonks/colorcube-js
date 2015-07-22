@@ -379,7 +379,6 @@ function ColorCube() {
         }
 
         if (is_distinct === true) {
-          console.log(is_distinct, m);
           result.push(m);
         }
       }
