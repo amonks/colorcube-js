@@ -2,21 +2,16 @@
 
 this is ajavascript port of [ColorCube](https://github.com/pixelogik/ColorCube), by Ole Krause-Sparmann.
 
-ColorCube is for dominant color extraction from RGB images
+ColorCube is for dominant color extraction from RGB images. Given an image element, it returns a sorted array of hex colors.
 
 ## usage
 
 ```js
-let cc = new ColorCube(30); // 30 is the resolution
-let image = document.getElementById("image");
-let colors = cc.get_colors(image);
-console.log(colors);
+var cc = new ColorCube( // all arguments are optional; these are the defaults:
+  20,   // color-space resolution
+  0.2,  // brightness threshold
+  0.4   // distinctness threshold
+);
+var image = document.getElementById("image");
+var colors = cc.get_colors(image);
 ```
-
-## TODO
-
--   [x] copy the python code over
--   [x] deal with canvasizing images
--   [x] document usage
--   [x] transpile out all the es7 features I'm using...
--   [ ] clean up API // hide more information

@@ -1,16 +1,118 @@
 /* jshint esnext: true */
 
-// Uses a 3d RGB histogram to find local maximas in the density distribution
-// in order to retrieve dominant colors of pixel images
-function ColorCube(resolution = 5, avoid_color = [255, 255, 255]) {
+/*
+ColorCube Class
+
+  Uses a 3d RGB histogram to find local maximas in the density distribution
+  in order to retrieve dominant colors of pixel images
+*/
+function ColorCube( resolution = 20,
+                    bright_threshold = 0.2,
+                    distinct_threshold = 0.4 ) {
   "use strict";
 
-  let API = {};
-  // threshold for distinct local maxima
-  let distinct_threshold = 0.2;
 
-  // colors that are darker than this go away
-  let bright_threshold = 0.6;
+
+  // subclasses   // // // // // // // // // // // // // // // // // // // //
+  // // // // // // // // // // // // // // // // // // // // // // // // //
+
+
+
+  /*
+  CanvasImage Class
+
+    Class that wraps the html image element and canvas.
+    It also simplifies some of the canvas context manipulation
+    with a set of helper functions.
+
+    modified from Color Thief v2.0
+    by Lokesh Dhakar - http://www.lokeshdhakar.com
+  */
+  let CanvasImage = function (image) {
+
+    if (! image instanceof HTMLElement) {
+      throw "You've gotta use an html image element as ur input!!";
+    }
+
+    let API = {};
+
+    let canvas  = document.createElement('canvas');
+    let context = canvas.getContext('2d');
+
+    // document.body.appendChild(canvas);
+
+    canvas.width  = image.width;
+    canvas.height = image.height;
+
+    context.drawImage(image, 0, 0, image.width, image.height);
+
+    API.getImageData = () => {
+      return context.getImageData(0, 0, image.width, image.height);
+    };
+
+    return API;
+  };
+
+
+
+
+  /*
+  CubeCell Class
+
+    class that represents one voxel within rgb colorspace
+  */
+  function CubeCell() {
+    let API = {};
+
+    // Count of hits
+    // (dividing the accumulators by this value gives the average color)
+    API.hit_count = 0;
+
+    // accumulators for color components
+    API.r_acc = 0.0;
+    API.g_acc = 0.0;
+    API.b_acc = 0.0;
+
+    return API;
+  }
+
+
+
+
+  /*
+  LocalMaximum Class
+
+    Local maxima as found during the image analysis.
+    We need this class for ordering by cell hit count.
+  */
+  function LocalMaximum(hit_count, cell_index, r, g, b) {
+    let API = {};
+
+    // hit count of the cell
+    API.hit_count = hit_count;
+
+    // linear index of the cell
+    API.cell_index = cell_index;
+
+    // average color of the cell
+    API.r = r;
+    API.g = g;
+    API.b = b;
+
+    return API;
+  }
+
+
+
+
+
+  // ColorCube    // // // // // // // // // // // // // // // // // // // //
+  // // // // // // // // // // // // // // // // // // // // // // // // //
+
+
+
+
+  let API = {};
 
   // helper variable to have cell count handy
   let cell_count = resolution * resolution * resolution;
@@ -79,10 +181,6 @@ function ColorCube(resolution = 5, avoid_color = [255, 255, 255]) {
 
     let m = find_local_maxima(canvasimage);
 
-    if (typeof API.avoid_color !== 'undefined') {
-      m = filter_too_similar(m);
-    }
-
     m = filter_distinct_maxima(m);
 
     let colors = [];
@@ -99,7 +197,7 @@ function ColorCube(resolution = 5, avoid_color = [255, 255, 255]) {
   };
 
   let componentToHex = (c) => {
-    var hex = c.toString(16);
+    let hex = c.toString(16);
     return hex.length == 1 ? "0" + hex : hex;
   };
 
@@ -127,7 +225,7 @@ function ColorCube(resolution = 5, avoid_color = [255, 255, 255]) {
       if (red < bright_threshold &&
           green < bright_threshold &&
           blue < bright_threshold) {
-        continue;
+        // continue;
       }
 
       // weigh colors by alpha channel
@@ -154,13 +252,13 @@ function ColorCube(resolution = 5, avoid_color = [255, 255, 255]) {
     }
 
     // we collect local maxima in here
-    var local_maxima = [];
+    let local_maxima = [];
 
     // find local maxima in the grid
     for (let r = 0; r < resolution; r++) {
       for (let g = 0; g < resolution; g++) {
         for (let b = 0; b < resolution; b++) {
-          // console.log("pixel!!");
+
           let local_index = cell_index(r, g, b);
 
           // get hit count of this cell
@@ -168,7 +266,7 @@ function ColorCube(resolution = 5, avoid_color = [255, 255, 255]) {
 
           // if this cell has no hits, ignore it
           if (local_hit_count === 0) {
-            // TODO: continue/break/stop/whatever
+            continue;
           }
 
           // it's a local maxima until we find a neighbor with a higher hit count
@@ -186,7 +284,6 @@ function ColorCube(resolution = 5, avoid_color = [255, 255, 255]) {
                 if (this.cells[this.cell_index(r_index, g_index, b_index)].hit_count > local_hit_count) {
                   // this is not a local maximum
                   is_local_maximum = false;
-                  // TODO
                   break;
                 }
               }
@@ -195,21 +292,22 @@ function ColorCube(resolution = 5, avoid_color = [255, 255, 255]) {
 
           // if this is not a local maximum, continue with loop
           if (is_local_maximum === false) {
-            // TODO
             continue;
           }
 
           // otherwise add this cell as a local maximum
-          var avg_r = cells[local_index].r_acc / cells[local_index].hit_count;
-          var avg_g = cells[local_index].g_acc / cells[local_index].hit_count;
-          var avg_b = cells[local_index].b_acc / cells[local_index].hit_count;
-          local_maxima.push( new LocalMaximum(local_hit_count, local_index, avg_r, avg_g, avg_b) );
+          let avg_r = cells[local_index].r_acc / cells[local_index].hit_count;
+          let avg_g = cells[local_index].g_acc / cells[local_index].hit_count;
+          let avg_b = cells[local_index].b_acc / cells[local_index].hit_count;
+          let localmaximum = new LocalMaximum(local_hit_count, local_index, avg_r, avg_g, avg_b)
+
+          local_maxima.push( localmaximum );
         }
       }
     }
 
     // return local maxima sorted with respect to hit count
-    local_maxima = local_maxima.sort(function(a, b) { return b - a; });
+    local_maxima = local_maxima.sort(function(a, b) { return b.hit_count - a.hit_count; });
 
     return local_maxima;
   };
@@ -217,16 +315,39 @@ function ColorCube(resolution = 5, avoid_color = [255, 255, 255]) {
   // Returns a filtered version of the specified array of maxima,
   // in which all entries have a minimum distance of distinct_threshold
   let filter_distinct_maxima = (maxima) => {
-    // TODO
-    return maxima;
-  };
+
+    let result = [];
+
+    // check for each maximum
+    for (let m of maxima) {
+      // this color is distinct until an earlier color is too close
+      let is_distinct = true;
+
+      for (let n of result) {
+        // compute delta components
+        let r_delta = m.r - n.r;
+        let g_delta = m.g - n.g;
+        let b_delta = m.b - n.b;
+
+        // compute delta in color space distance
+        let delta = Math.sqrt(r_delta * r_delta + g_delta * g_delta + b_delta * b_delta);
+
+        // if too close, mark as non distinct and break inner loop
+        if (delta < distinct_threshold) {
+          is_distinct = false;
+          break;
+        }
+      }
+
+      // add to filtered array if is distinct
+      if (is_distinct === true) {
+        console.log(is_distinct, m);
+        result.push(m);
+      }
+    }
 
 
-  // Returns a filtered version of the specified array of maxima,
-  // in which all entries are far enough away from the specified avoid_color
-  let filter_too_similar = (maxima) => {
-    // TODO
-    return maxima;
+    return result;
   };
 
   return API;

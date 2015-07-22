@@ -16,19 +16,19 @@
   <h2>found these colors:</h2>
   <ul id="output"></ul>
 
-  <script src="dist/colorcube.min.js"></script>
+  <script src="dist/colorcube.js"></script>
   <script>
     /* jshint esnext: true */
     (function () {
      'use strict';
-      let cc = new ColorCube(3);
-      let image = document.getElementById("image");
-      let colors = cc.get_colors(image);
+      var cc = new ColorCube(20, 0.2, 0.4);
+      var image = document.getElementById("image");
+      var colors = cc.get_colors(image);
 
       console.log(colors);
 
-      let output = document.getElementById('output');
-      for (let color of colors) {
+      var output = document.getElementById('output');
+      for (var color of colors) {
         output.innerHTML += "<li style='background: " + color + "'>" + color + "</li>"
       }
     }());

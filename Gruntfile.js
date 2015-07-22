@@ -13,6 +13,9 @@ module.exports = function(grunt) {
     },
 
     'babel': {
+      options: {
+        sourceMap: true
+      },
       dist: {
         files: {
           'dist/colorcube.js': 'dist/colorcube.es6.js'
