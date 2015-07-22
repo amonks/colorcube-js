@@ -1,21 +1,3 @@
-/*
-Copyright (c) 2015, Ole Krause-Sparmann,
-                    Andrew Monks <a@monks.co>
-
-Permission to use, copy, modify, and/or distribute this software for
-any purpose with or without fee is hereby granted, provided that the
-above copyright notice and this permission notice appear in all
-copies.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL
-WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
-AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
-DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
-PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
-TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE. */
-
 /* jshint esnext: true */
 
 /*
@@ -53,60 +35,16 @@ var CanvasImage = function (image) {
   return API;
 };
 
-// Local maxima as found during the image analysis.
-// We need this class for ordering by cell hit count.
-function LocalMaximum(hit_count, cell_index, r, g, b) {
-  "use strict";
-
-  let API = {};
-
-  // hit count of the cell
-  API.hit_count = hit_count;
-
-  // linear index of the cell
-  API.cell_index = cell_index;
-
-  // average color of the cell
-  API.r = r;
-  API.g = g;
-  API.b = b;
-
-  return API;
-}
-
-// The color cube is made out of these cells
-function CubeCell() {
-  "use strict";
-
-  let API = {};
-
-  // Count of hits
-  // (dividing the accumulators by this value gives the average color)
-  API.hit_count = 0;
-
-  // accumulators for color components
-  API.r_acc = 0.0;
-  API.g_acc = 0.0;
-  API.b_acc = 0.0;
-
-  return API;
-}
+/* jshint esnext: true */
 
 // Uses a 3d RGB histogram to find local maximas in the density distribution
 // in order to retrieve dominant colors of pixel images
-function ColorCube(resolution_in, avoid_color_in) {
+function ColorCube(resolution = 5, avoid_color = [255, 255, 255]) {
   "use strict";
 
   let API = {};
-
-  // keep resolution
-  let resolution = resolution_in || 30;
-
   // threshold for distinct local maxima
   let distinct_threshold = 0.2;
-
-  // color to avoid
-  let avoid_color = avoid_color_in || [255, 255, 255];
 
   // colors that are darker than this go away
   let bright_threshold = 0.6;
@@ -165,7 +103,7 @@ function ColorCube(resolution_in, avoid_color_in) {
   };
 
   let clear_cells = () => {
-    for (let cell in API.cells) {
+    for (let cell of cells) {
       cell.hit_count = 0;
       cell.r_acc = 0;
       cell.g_acc = 0;
@@ -185,10 +123,10 @@ function ColorCube(resolution_in, avoid_color_in) {
     m = API.filter_distinct_maxima(m);
 
     let colors = [];
-    for (let n in m) {
-      let r = Math.round(m[n].r * 255.0);
-      let g = Math.round(m[n].g * 255.0);
-      let b = Math.round(m[n].b * 255.0);
+    for (let n of m) {
+      let r = Math.round(n.r * 255.0);
+      let g = Math.round(n.g * 255.0);
+      let b = Math.round(n.b * 255.0);
       let color = rgbToHex(r, g, b);
       if (color === "#NaNNaNNaN") {continue;}
       colors.push(color);
@@ -308,15 +246,7 @@ function ColorCube(resolution_in, avoid_color_in) {
     }
 
     // return local maxima sorted with respect to hit count
-    // TODO
-    function compare(a,b) {
-      if (a.hit_count > b.hit_count)
-        return -1;
-      if (a.hit_count < b.hit_count)
-        return 1;
-      return 0;
-    }
-    local_maxima = local_maxima.sort(compare);
+    local_maxima = local_maxima.sort(function(a, b) { return b - a; });
 
     return local_maxima;
   };
@@ -335,6 +265,49 @@ function ColorCube(resolution_in, avoid_color_in) {
     // TODO
     return maxima;
   };
+
+  return API;
+}
+
+/* jshint esnext: true */
+
+// The color cube is made out of these cells
+function CubeCell() {
+  "use strict";
+
+  let API = {};
+
+  // Count of hits
+  // (dividing the accumulators by this value gives the average color)
+  API.hit_count = 0;
+
+  // accumulators for color components
+  API.r_acc = 0.0;
+  API.g_acc = 0.0;
+  API.b_acc = 0.0;
+
+  return API;
+}
+
+/* jshint esnext: true */
+
+// Local maxima as found during the image analysis.
+// We need this class for ordering by cell hit count.
+function LocalMaximum(hit_count, cell_index, r, g, b) {
+  "use strict";
+
+  let API = {};
+
+  // hit count of the cell
+  API.hit_count = hit_count;
+
+  // linear index of the cell
+  API.cell_index = cell_index;
+
+  // average color of the cell
+  API.r = r;
+  API.g = g;
+  API.b = b;
 
   return API;
 }

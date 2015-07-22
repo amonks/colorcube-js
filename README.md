@@ -4,13 +4,6 @@ this is ajavascript port of [ColorCube](https://github.com/pixelogik/ColorCube),
 
 ColorCube is for dominant color extraction from RGB images
 
-# ¡¡¡IMPORTANT WARNING!!!
-
-colorcube-js uses ES6 features
-
-this will probably only work in Chrome Canary until v45 goes stable in September, '15.
-
-
 ## usage
 
 ```js
@@ -25,5 +18,5 @@ console.log(colors);
 -   [x] copy the python code over
 -   [x] deal with canvasizing images
 -   [x] document usage
+-   [x] transpile out all the es7 features I'm using...
 -   [ ] clean up API // hide more information
--   [ ] transpile out all the es7 features I'm using...

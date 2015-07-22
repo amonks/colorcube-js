@@ -2,20 +2,35 @@
 <html>
 <head>
   <title>colorcube-js</title>
+  <style>
+    li {
+      color: white;
+    }
+  </style>
 </head>
 <body>
-  <h1>colorcube-js uses ES6 features</h1>
-  <h2>this will probably only work in Chrome Canary until v45 goes stable in September, '15.</h2>
-  <img src="blue.png" alt="me" id="image" >
-  <script src="colorcube.js"></script>
+
+  <h1><a href="https://github.com/amonks/colorcube-js">colorcube-js</a></h1>
+
+  <img src="images/cocacola.jpg" alt="me" id="image">
+  <h2>found these colors:</h2>
+  <ul id="output"></ul>
+
+  <script src="dist/colorcube.min.js"></script>
   <script>
     /* jshint esnext: true */
     (function () {
      'use strict';
-      let cc = new ColorCube(30); // 30 is the resolution
+      let cc = new ColorCube(3);
       let image = document.getElementById("image");
       let colors = cc.get_colors(image);
+
       console.log(colors);
+
+      let output = document.getElementById('output');
+      for (let color of colors) {
+        output.innerHTML += "<li style='background: " + color + "'>" + color + "</li>"
+      }
     }());
   </script>
 </body>
