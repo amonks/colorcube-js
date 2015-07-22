@@ -117,10 +117,10 @@ function ColorCube(resolution = 5, avoid_color = [255, 255, 255]) {
     let m = find_local_maxima(canvasimage);
 
     if (typeof API.avoid_color !== 'undefined') {
-      m = API.filter_too_similar(m);
+      m = filter_too_similar(m);
     }
 
-    m = API.filter_distinct_maxima(m);
+    m = filter_distinct_maxima(m);
 
     let colors = [];
     for (let n of m) {
@@ -252,8 +252,8 @@ function ColorCube(resolution = 5, avoid_color = [255, 255, 255]) {
   };
 
   // Returns a filtered version of the specified array of maxima,
-  // in which all entries have a minimum distance of this.distinct_threshold
-  API.filter_distinct_maxima = (maxima) => {
+  // in which all entries have a minimum distance of distinct_threshold
+  let filter_distinct_maxima = (maxima) => {
     // TODO
     return maxima;
   };
@@ -261,7 +261,7 @@ function ColorCube(resolution = 5, avoid_color = [255, 255, 255]) {
 
   // Returns a filtered version of the specified array of maxima,
   // in which all entries are far enough away from the specified avoid_color
-  API.filter_too_similar = (maxima) => {
+  let filter_too_similar = (maxima) => {
     // TODO
     return maxima;
   };

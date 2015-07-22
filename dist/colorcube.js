@@ -108,10 +108,10 @@ function ColorCube() {
     var m = find_local_maxima(canvasimage);
 
     if (typeof API.avoid_color !== 'undefined') {
-      m = API.filter_too_similar(m);
+      m = filter_too_similar(m);
     }
 
-    m = API.filter_distinct_maxima(m);
+    m = filter_distinct_maxima(m);
 
     var colors = [];
     var _iteratorNormalCompletion2 = true;
@@ -265,15 +265,15 @@ function ColorCube() {
   };
 
   // Returns a filtered version of the specified array of maxima,
-  // in which all entries have a minimum distance of this.distinct_threshold
-  API.filter_distinct_maxima = function (maxima) {
+  // in which all entries have a minimum distance of distinct_threshold
+  var filter_distinct_maxima = function filter_distinct_maxima(maxima) {
     // TODO
     return maxima;
   };
 
   // Returns a filtered version of the specified array of maxima,
   // in which all entries are far enough away from the specified avoid_color
-  API.filter_too_similar = function (maxima) {
+  var filter_too_similar = function filter_too_similar(maxima) {
     // TODO
     return maxima;
   };
