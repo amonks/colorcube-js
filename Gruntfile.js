@@ -5,20 +5,13 @@ module.exports = function(grunt) {
       src: ["dist"]
     },
 
-    'concat': {
-      js: {
-        src: ['src/canvasimage.js', 'src/colorcube.js', 'src/cubecell.js', 'src/localmaximum.js'],
-        dest: 'dist/colorcube.es6.js',
-      },
-    },
-
     'babel': {
       options: {
         sourceMap: true
       },
       dist: {
         files: {
-          'dist/colorcube.js': 'dist/colorcube.es6.js'
+          'dist/colorcube.js': 'src/colorcube.js'
         }
       }
     },
@@ -26,6 +19,9 @@ module.exports = function(grunt) {
     'uglify': {
       js: {
         options: {
+          sourceMap: true,
+          sourceMapIncludeSources: true,
+          sourceMapIn: 'dist/colorcube.js.map', // input sourcemap from a previous compilation
           banner: '/* ' + grunt.file.read('LICENSE.md') + ' */'
         },
         files: {
@@ -40,7 +36,6 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-babel');
 
 
@@ -50,7 +45,6 @@ module.exports = function(grunt) {
 
   grunt.registerTask('build', [
     'cleanup',
-    'concat:js',
     'babel',
     'uglify:js',
   ]);

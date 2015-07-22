@@ -16,7 +16,8 @@
   <h2>found these colors:</h2>
   <ul id="output"></ul>
 
-  <script src="dist/colorcube.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/core-js/0.9.18/core.min.js"></script>
+  <script src="dist/colorcube.min.js"></script>
   <script>
     /* jshint esnext: true */
     (function () {
@@ -29,7 +30,7 @@
 
       var output = document.getElementById('output');
       for (var color of colors) {
-        output.innerHTML += "<li style='background: " + color + "'>" + color + "</li>"
+        output.innerHTML += "<li style='background: " + color + "'>" + color + "</li>";
       }
     }());
   </script>
