@@ -29,3 +29,11 @@ There are multiple polyfills available to add Symbol to browsers that don't supp
 In the demo page, I use [core-js](https://github.com/zloirock/core-js) because it was easy to CDN in.
 
 Babel maintains their own [polyfill](http://babeljs.io/docs/advanced/caveats/), which would work also.
+
+## alternatives
+
+There are several other options for in-browser color extraction. I like this one best because it is small and easy to understand. (Props again to Ole Krause-Sparmann for the excellent algorithm).
+
+*   [vibrant.js](http://jariz.github.io/vibrant.js/) is based on Android's support library
+*   [color thief](http://lokeshdhakar.com/projects/color-thief/) works by color quantizing
+*   [jquery.adaptive-backgrounds.js](https://github.com/briangonzalez/jquery.adaptive-backgrounds.js) is even smaller than colorcube-js but requires jQuery
